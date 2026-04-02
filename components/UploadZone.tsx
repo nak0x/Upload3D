@@ -166,6 +166,8 @@ export default function UploadZone() {
       setGlobalError(
         codes.includes('file-invalid-type')
           ? `Format non supporté. Utilisez : ${ALL_EXTENSIONS.join(', ')}`
+          : codes.includes('file-too-large')
+          ? 'Fichier trop volumineux (max 2 GB)'
           : `Fichier rejeté : ${codes}`
       )
       return
@@ -185,7 +187,7 @@ export default function UploadZone() {
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
     accept: ACCEPTED_FORMATS,
-    maxSize: 1024 * 1024 * 1024,
+    maxSize: 2 * 1024 * 1024 * 1024,
     disabled: isUploading,
     multiple: true,
   })

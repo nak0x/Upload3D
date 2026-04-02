@@ -27,7 +27,7 @@ export default function Home() {
         <span className="mx-2">·</span>
         Textures : <span className="font-mono text-gray-500">.png · .jpg · .webp · .ktx2</span>
         <span className="mx-2">·</span>
-        Taille max : <span className="font-mono text-gray-500">1 GB</span>
+        Taille max : <span className="font-mono text-gray-500">2 GB</span>
       </footer>
     </main>
   )
