@@ -7,11 +7,13 @@ import { execSync } from 'child_process'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// Formats 3D autorisés
-const ALLOWED_EXTENSIONS = new Set(['.glb', '.gltf', '.fbx'])
+// Formats autorisés par type
+const MODEL_EXTENSIONS = new Set(['.glb', '.gltf', '.fbx'])
+const TEXTURE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.ktx2'])
+const ALL_ALLOWED_EXTENSIONS = new Set([...MODEL_EXTENSIONS, ...TEXTURE_EXTENSIONS])
 
-// Dossier de destination (volume persistant Coolify)
 const MODELS_DIR = join(process.cwd(), 'public', 'models')
+const TEXTURES_DIR = join(process.cwd(), 'public', 'textures')
 
 // ─────────────────────────────────────────────
 // Utilitaire : sanitiser le nom de fichier
@@ -27,34 +29,45 @@ function sanitizeFilename(name: string): string {
 // Utilitaire : parser le multipart via req.formData()
 // Retourne { filename, savedPath } ou throw
 // ─────────────────────────────────────────────
-async function parseUpload(req: NextRequest): Promise<{ filename: string; savedPath: string }> {
+async function parseUpload(req: NextRequest): Promise<{ filename: string; savedPath: string; relPath: string }> {
   const formData = await req.formData()
   const file = formData.get('file') as File | null
+  const assetName = (formData.get('assetName') as string | null)?.trim()
 
   if (!file || file.size === 0) {
     throw new Error('Aucun fichier reçu dans la requête')
   }
 
-  const safeFilename = sanitizeFilename(file.name)
-  const ext = extname(safeFilename).toLowerCase()
+  const originalSafe = sanitizeFilename(file.name)
+  const ext = extname(originalSafe).toLowerCase()
 
-  if (!ALLOWED_EXTENSIONS.has(ext)) {
-    throw new Error(`Extension non autorisée : "${ext}". Formats acceptés : .glb, .gltf, .fbx`)
+  if (!ALL_ALLOWED_EXTENSIONS.has(ext)) {
+    throw new Error(`Extension non autorisée : "${ext}". Formats acceptés : .glb, .gltf, .fbx, .png, .jpg, .jpeg, .webp, .ktx2`)
   }
 
-  mkdirSync(MODELS_DIR, { recursive: true })
+  // Renommer avec le nom fourni par le designer si disponible
+  const baseName = assetName
+    ? sanitizeFilename(assetName).replace(/\.[^.]+$/, '') // retirer extension si présente
+    : originalSafe.replace(/\.[^.]+$/, '')
+  const filename = `${baseName}${ext}`
 
-  const savedPath = join(MODELS_DIR, safeFilename)
+  const isTexture = TEXTURE_EXTENSIONS.has(ext)
+  const destDir = isTexture ? TEXTURES_DIR : MODELS_DIR
+  const relPath = join('public', isTexture ? 'textures' : 'models', filename)
+
+  mkdirSync(destDir, { recursive: true })
+
+  const savedPath = join(destDir, filename)
   const buffer = Buffer.from(await file.arrayBuffer())
   writeFileSync(savedPath, buffer)
 
-  return { filename: safeFilename, savedPath }
+  return { filename, savedPath, relPath }
 }
 
 // ─────────────────────────────────────────────
 // Utilitaire : exécuter la séquence git
 // ─────────────────────────────────────────────
-function runGitPush(filename: string): { output: string } {
+function runGitPush(filename: string, relPath: string): { output: string } {
   const branch = process.env.GIT_BRANCH ?? 'main'
   const repoUrl = process.env.GIT_REPO_URL
 
@@ -97,7 +110,6 @@ function runGitPush(filename: string): { output: string } {
     execSync(`git remote set-url origin "${repoUrl}"`, { ...execOpts, stdio: 'pipe' })
   }
 
-  const relPath = join('public', 'models', filename)
   const timestamp = new Date().toISOString()
 
   let output = ''
@@ -153,12 +165,13 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // 2. Parse & écriture disque via busboy (streaming)
+  // 2. Parse & écriture disque
   let filename: string
   let savedPath: string
+  let relPath: string
 
   try {
-    ;({ filename, savedPath } = await parseUpload(req))
+    ;({ filename, savedPath, relPath } = await parseUpload(req))
     console.log(`[upload] Fichier reçu et sauvegardé : ${savedPath}`)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Erreur inconnue lors de l\'upload'
@@ -171,7 +184,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Séquence git push
   try {
-    const { output } = runGitPush(filename)
+    const { output } = runGitPush(filename, relPath)
     console.log(`[upload] Git push réussi pour ${filename}`)
 
     return NextResponse.json({

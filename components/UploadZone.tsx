@@ -24,9 +24,15 @@ const ACCEPTED_FORMATS = {
   'model/gltf-binary': ['.glb'],
   'model/gltf+json': ['.gltf'],
   'application/octet-stream': ['.fbx'],
+  'image/png': ['.png'],
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/webp': ['.webp'],
+  'image/ktx2': ['.ktx2'],
 }
 
-const ACCEPTED_EXTENSIONS = ['.glb', '.gltf', '.fbx']
+const MODEL_EXTENSIONS = ['.glb', '.gltf', '.fbx']
+const TEXTURE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.ktx2']
+const ALL_EXTENSIONS = [...MODEL_EXTENSIONS, ...TEXTURE_EXTENSIONS]
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B'
@@ -34,6 +40,13 @@ function formatBytes(bytes: number): string {
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
+}
+
+function getFileType(filename: string): 'model' | 'texture' | null {
+  const ext = filename.slice(filename.lastIndexOf('.')).toLowerCase()
+  if (MODEL_EXTENSIONS.includes(ext)) return 'model'
+  if (TEXTURE_EXTENSIONS.includes(ext)) return 'texture'
+  return null
 }
 
 // ─────────────────────────────────────────────
@@ -44,6 +57,7 @@ export default function UploadZone() {
   const [progress, setProgress] = useState(0)
   const [secret, setSecret] = useState('')
   const [secretVisible, setSecretVisible] = useState(false)
+  const [assetName, setAssetName] = useState('')
   const [result, setResult] = useState<UploadResult | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const xhrRef = useRef<XMLHttpRequest | null>(null)
@@ -63,11 +77,13 @@ export default function UploadZone() {
 
       const formData = new FormData()
       formData.append('file', file)
+      if (assetName.trim()) {
+        formData.append('assetName', assetName.trim())
+      }
 
       const xhr = new XMLHttpRequest()
       xhrRef.current = xhr
 
-      // Barre de progression réelle
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const pct = Math.round((event.loaded / event.total) * 100)
@@ -106,7 +122,7 @@ export default function UploadZone() {
       xhr.setRequestHeader('x-upload-secret', secret.trim())
       xhr.send(formData)
     },
-    [secret]
+    [secret, assetName]
   )
 
   // ── react-dropzone ──
@@ -118,7 +134,7 @@ export default function UploadZone() {
           success: false,
           error:
             codes.includes('file-invalid-type')
-              ? `Format non supporté. Utilisez : ${ACCEPTED_EXTENSIONS.join(', ')}`
+              ? `Format non supporté. Utilisez : ${ALL_EXTENSIONS.join(', ')}`
               : codes.includes('file-too-large')
               ? 'Fichier trop volumineux (max 1 GB)'
               : `Fichier rejeté : ${codes}`,
@@ -141,7 +157,7 @@ export default function UploadZone() {
     onDrop,
     accept: ACCEPTED_FORMATS,
     maxFiles: 1,
-    maxSize: 500 * 1024 * 1024,
+    maxSize: 1024 * 1024 * 1024,
     disabled: status === 'uploading',
   })
 
@@ -160,13 +176,15 @@ export default function UploadZone() {
     setSelectedFile(null)
   }
 
+  const fileType = selectedFile ? getFileType(selectedFile.name) : null
+
   // ─────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────
   return (
     <div className="w-full max-w-2xl space-y-5">
 
-      {/* Champ mot de passe */}
+      {/* Clé d'accès */}
       <div className="space-y-1.5">
         <label className="block text-sm font-medium text-gray-300">
           Clé d&apos;accès
@@ -190,12 +208,10 @@ export default function UploadZone() {
             tabIndex={-1}
           >
             {secretVisible ? (
-              // Eye-off icon
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
               </svg>
             ) : (
-              // Eye icon
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -203,6 +219,35 @@ export default function UploadZone() {
             )}
           </button>
         </div>
+      </div>
+
+      {/* Nom de l'asset */}
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-gray-300">
+          Nom de l&apos;asset
+          <span className="text-gray-600 font-normal ml-2">— utilisé pour nommer le fichier sur Git</span>
+        </label>
+        <input
+          type="text"
+          value={assetName}
+          onChange={(e) => setAssetName(e.target.value)}
+          placeholder="ex : clocher, sol_pierre, mur_brique…"
+          disabled={status === 'uploading'}
+          className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5
+                     text-gray-100 placeholder-gray-600 text-sm font-mono
+                     focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500
+                     disabled:opacity-50 disabled:cursor-not-allowed transition"
+        />
+        {assetName.trim() && selectedFile && (
+          <p className="text-xs text-gray-500">
+            Sera sauvegardé comme{' '}
+            <span className="font-mono text-gray-400">
+              {fileType === 'texture' ? 'textures' : 'models'}/
+              {assetName.trim().replace(/[^a-zA-Z0-9._-]/g, '_').toLowerCase()}
+              {selectedFile.name.slice(selectedFile.name.lastIndexOf('.')).toLowerCase()}
+            </span>
+          </p>
+        )}
       </div>
 
       {/* Dropzone */}
@@ -282,23 +327,29 @@ export default function UploadZone() {
         ) : isDragReject ? (
           <div>
             <p className="text-sm font-medium text-red-400 mb-1">Format non supporté</p>
-            <p className="text-xs text-gray-500">Utilisez .glb, .gltf ou .fbx</p>
+            <p className="text-xs text-gray-500">Modèles : .glb, .gltf, .fbx · Textures : .png, .jpg, .webp, .ktx2</p>
           </div>
         ) : selectedFile ? (
           <div>
-            <p className="text-sm font-medium text-gray-200 mb-1">Fichier prêt</p>
-            <p className="text-xs text-gray-400 font-mono">
-              {selectedFile.name}
+            <p className="text-sm font-medium text-gray-200 mb-1">
+              Fichier prêt
+              {fileType && (
+                <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-normal
+                  ${fileType === 'model' ? 'bg-brand-500/15 text-brand-400' : 'bg-purple-500/15 text-purple-400'}`}>
+                  {fileType === 'model' ? 'Modèle 3D' : 'Texture'}
+                </span>
+              )}
             </p>
+            <p className="text-xs text-gray-400 font-mono">{selectedFile.name}</p>
             <p className="text-xs text-gray-600 mt-0.5">{formatBytes(selectedFile.size)}</p>
           </div>
         ) : (
           <div>
             <p className="text-sm font-medium text-gray-300 mb-1">
-              {isDragActive ? 'Relâchez pour déposer' : 'Glissez votre fichier 3D ici'}
+              {isDragActive ? 'Relâchez pour déposer' : 'Glissez votre fichier ici'}
             </p>
             <p className="text-xs text-gray-600">
-              ou cliquez pour parcourir — .glb, .gltf, .fbx jusqu&apos;à 500 MB
+              Modèles : .glb, .gltf, .fbx · Textures : .png, .jpg, .webp, .ktx2
             </p>
           </div>
         )}

@@ -23,7 +23,9 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-10 text-gray-600 text-xs text-center">
-        Formats acceptés : <span className="font-mono text-gray-500">.glb · .gltf · .fbx</span>
+        Modèles : <span className="font-mono text-gray-500">.glb · .gltf · .fbx</span>
+        <span className="mx-2">·</span>
+        Textures : <span className="font-mono text-gray-500">.png · .jpg · .webp · .ktx2</span>
         <span className="mx-2">·</span>
         Taille max : <span className="font-mono text-gray-500">1 GB</span>
       </footer>
