@@ -1,6 +1,5 @@
 import { Effect } from 'postprocessing'
 import { Uniform } from 'three'
-import { forwardRef, useMemo } from 'react'
 
 const fragmentShader = /* glsl */ `
 uniform int uRadius;
@@ -60,16 +59,4 @@ export class KuwaharaEffectImpl extends Effect {
       uniforms: new Map([['uRadius', new Uniform(radius)]]),
     })
   }
-
-  set radius(v: number) {
-    this.uniforms.get('uRadius')!.value = v
-  }
 }
-
-export const KuwaharaPass = forwardRef<KuwaharaEffectImpl, { radius?: number }>(
-  ({ radius = 2 }, ref) => {
-    const effect = useMemo(() => new KuwaharaEffectImpl({ radius }), [radius])
-    return <primitive ref={ref} object={effect} dispose={null} />
-  }
-)
-KuwaharaPass.displayName = 'KuwaharaPass'

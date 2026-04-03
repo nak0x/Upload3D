@@ -1,6 +1,5 @@
 import { Effect } from 'postprocessing'
 import { Uniform } from 'three'
-import { forwardRef, useMemo } from 'react'
 
 const fragmentShader = /* glsl */ `
 uniform float uOpacity;
@@ -30,10 +29,7 @@ float grain(vec2 p) {
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
   vec2 grainUv = uv * resolution.xy / 3.0;
   float g = grain(grainUv);
-
-  vec3 paper = vec3(g);
-  vec3 blended = inputColor.rgb * mix(vec3(1.0), paper, uOpacity);
-
+  vec3 blended = inputColor.rgb * mix(vec3(1.0), vec3(g), uOpacity);
   outputColor = vec4(blended, inputColor.a);
 }
 `
@@ -44,17 +40,4 @@ export class PaperOverlayEffectImpl extends Effect {
       uniforms: new Map([['uOpacity', new Uniform(opacity)]]),
     })
   }
-
-  set opacity(v: number) {
-    this.uniforms.get('uOpacity')!.value = v
-  }
 }
-
-export const PaperOverlayPass = forwardRef<
-  PaperOverlayEffectImpl,
-  { opacity?: number }
->(({ opacity = 0.15 }, ref) => {
-  const effect = useMemo(() => new PaperOverlayEffectImpl({ opacity }), [opacity])
-  return <primitive ref={ref} object={effect} dispose={null} />
-})
-PaperOverlayPass.displayName = 'PaperOverlayPass'

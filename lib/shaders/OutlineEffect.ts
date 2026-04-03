@@ -1,6 +1,5 @@
 import { Effect } from 'postprocessing'
 import { Color, Uniform } from 'three'
-import { forwardRef, useMemo } from 'react'
 
 const fragmentShader = /* glsl */ `
 uniform float uEdgeStrength;
@@ -61,13 +60,12 @@ export class OutlineEffectImpl extends Effect {
     edgeColor?: string
     noiseFrequency?: number
   } = {}) {
-    const color = new Color(edgeColor)
     super('OutlineEffect', fragmentShader, {
       uniforms: new Map<string, Uniform<unknown>>([
-        ['uEdgeStrength',  new Uniform(edgeStrength)],
-        ['uEdgeColor',     new Uniform(color)],
-        ['uNoiseFrequency',new Uniform(noiseFrequency)],
-        ['uTime',          new Uniform(0)],
+        ['uEdgeStrength',   new Uniform(edgeStrength)],
+        ['uEdgeColor',      new Uniform(new Color(edgeColor))],
+        ['uNoiseFrequency', new Uniform(noiseFrequency)],
+        ['uTime',           new Uniform(0)],
       ]),
     })
   }
@@ -76,15 +74,3 @@ export class OutlineEffectImpl extends Effect {
     this.uniforms.get('uTime')!.value += deltaTime
   }
 }
-
-export const OutlinePass = forwardRef<
-  OutlineEffectImpl,
-  { edgeStrength?: number; edgeColor?: string; noiseFrequency?: number }
->(({ edgeStrength = 3.0, edgeColor = '#2d1a0e', noiseFrequency = 8.0 }, ref) => {
-  const effect = useMemo(
-    () => new OutlineEffectImpl({ edgeStrength, edgeColor, noiseFrequency }),
-    [edgeStrength, edgeColor, noiseFrequency]
-  )
-  return <primitive ref={ref} object={effect} dispose={null} />
-})
-OutlinePass.displayName = 'OutlinePass'

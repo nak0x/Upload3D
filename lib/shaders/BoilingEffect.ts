@@ -1,6 +1,5 @@
 import { Effect } from 'postprocessing'
 import { Uniform } from 'three'
-import { forwardRef, useMemo } from 'react'
 
 const fragmentShader = /* glsl */ `
 uniform float uTime;
@@ -39,15 +38,3 @@ export class BoilingEffectImpl extends Effect {
     this.uniforms.get('uTime')!.value += deltaTime
   }
 }
-
-export const BoilingPass = forwardRef<
-  BoilingEffectImpl,
-  { speed?: number; strength?: number }
->(({ speed = 1.0, strength = 0.002 }, ref) => {
-  const effect = useMemo(
-    () => new BoilingEffectImpl({ speed, strength }),
-    [speed, strength]
-  )
-  return <primitive ref={ref} object={effect} dispose={null} />
-})
-BoilingPass.displayName = 'BoilingPass'
