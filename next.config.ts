@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   // Output standalone pour Docker (inclut uniquement les fichiers nécessaires)
   output: 'standalone',
 
-  // Nécessaire pour que R3F partage la même instance React que l'app
+  // Nécessaire pour que R3F partage la même instance React que l'app (webpack)
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing', 'postprocessing'],
 
   // Augmenter la taille max des réponses pour les gros fichiers
