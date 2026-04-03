@@ -54,6 +54,16 @@ Multi-stage Dockerfile: `deps` → `builder` → `runner` (Node 20 Alpine with g
 
 Deployed via Coolify. The `public/models/` directory should be a persistent volume.
 
+## Git Commits
+
+Messages courts et concis, toujours préfixés :
+
+- `feat:` — nouvelle fonctionnalité
+- `fix:` — correction de bug
+- `style:` — changements UI/CSS sans impact logique
+- `refactor:` — restructuration sans changement de comportement
+- `chore:` — maintenance, dépendances, config
+
 ## Key Design Constraints
 
 - Git operations in `route.ts` use `execSync` with a 60s timeout — keep operations atomic.
