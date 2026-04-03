@@ -1,7 +1,20 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
+import dynamic from 'next/dynamic'
 import { getFileType } from '@/lib/upload'
+
+const WatercolorViewer = dynamic(() => import('@/components/WatercolorViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-64">
+      <svg className="w-6 h-6 text-brand-500 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+      </svg>
+    </div>
+  ),
+})
 
 interface PreviewModalProps {
   file: File
@@ -18,13 +31,6 @@ export default function PreviewModal({ file, onClose }: PreviewModalProps) {
 
   const objectUrl = useMemo(() => URL.createObjectURL(file), [file])
   useEffect(() => () => URL.revokeObjectURL(objectUrl), [objectUrl])
-
-  const [modelViewerReady, setModelViewerReady] = useState(false)
-
-  useEffect(() => {
-    if (!isGltf) return
-    import('@google/model-viewer').then(() => setModelViewerReady(true))
-  }, [isGltf])
 
   // Fermeture par touche Escape
   useEffect(() => {
@@ -66,25 +72,7 @@ export default function PreviewModal({ file, onClose }: PreviewModalProps) {
             />
           )}
 
-          {isGltf && modelViewerReady && (
-            <model-viewer
-              src={objectUrl}
-              alt={file.name}
-              camera-controls=""
-              auto-rotate=""
-              shadow-intensity="1"
-              style={{ width: '100%', height: '60vh', display: 'block' }}
-            />
-          )}
-
-          {isGltf && !modelViewerReady && (
-            <div className="flex items-center justify-center h-64">
-              <svg className="w-6 h-6 text-brand-500 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            </div>
-          )}
+          {isGltf && <WatercolorViewer src={objectUrl} />}
 
           {isUnsupported && (
             <div className="flex flex-col items-center justify-center h-48 gap-2 text-gray-400">
