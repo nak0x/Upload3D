@@ -1,6 +1,13 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
+
+interface Toast {
+  id: number
+  type: 'success' | 'warning' | 'error'
+  title: string
+  detail?: string
+}
 import { useDropzone, FileRejection } from 'react-dropzone'
 import {
   FileEntry,
@@ -20,7 +27,15 @@ export default function UploadZone() {
   const [secretVisible, setSecretVisible] = useState(false)
   const [assetName, setAssetName] = useState('')
   const [globalError, setGlobalError] = useState<string | null>(null)
+  const [toasts, setToasts] = useState<Toast[]>([])
+  const toastIdRef = useRef(0)
   const xhrRef = useRef<XMLHttpRequest | null>(null)
+
+  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+    const id = ++toastIdRef.current
+    setToasts((prev) => [...prev, { ...toast, id }])
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 5000)
+  }, [])
 
   const updateFile = (index: number, patch: Partial<FileEntry>) => {
     setFiles((prev) => prev.map((f, i) => i === index ? { ...f, ...patch } : f))
@@ -56,6 +71,19 @@ export default function UploadZone() {
         error: result.success ? undefined : result.error,
         filename: result.filename,
       })
+
+      const name = result.filename ?? files[i].file.name
+      if (result.success) {
+        if (result.compressionWarning) {
+          addToast({ type: 'warning', title: `${name} poussé sur Git`, detail: 'Compression échouée — original sauvegardé' })
+        } else if (result.compressedFilename) {
+          addToast({ type: 'success', title: `${name} poussé et compressé` })
+        } else {
+          addToast({ type: 'success', title: `${name} poussé sur Git` })
+        }
+      } else {
+        addToast({ type: 'error', title: `Échec : ${name}`, detail: result.error })
+      }
     }
 
     setIsUploading(false)
@@ -112,6 +140,23 @@ export default function UploadZone() {
   // Render
   // ─────────────────────────────────────────────
   return (
+    <>
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+      {toasts.map((toast) => (
+        <div key={toast.id} className={`flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm max-w-sm bg-white
+          ${toast.type === 'success' ? 'border-green-200' : toast.type === 'warning' ? 'border-amber-200' : 'border-red-200'}`}>
+          <span className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold
+            ${toast.type === 'success' ? 'bg-green-500' : toast.type === 'warning' ? 'bg-amber-400' : 'bg-red-500'}`}>
+            {toast.type === 'success' ? '✓' : toast.type === 'warning' ? '!' : '✕'}
+          </span>
+          <div className="min-w-0">
+            <p className="font-medium text-gray-700 truncate">{toast.title}</p>
+            {toast.detail && <p className="text-xs text-gray-400 mt-0.5">{toast.detail}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+
     <div className="w-full max-w-2xl space-y-4">
 
       {/* Clé d'accès */}
@@ -263,5 +308,6 @@ export default function UploadZone() {
         )}
       </div>
     </div>
+    </>
   )
 }

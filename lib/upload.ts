@@ -15,6 +15,7 @@ export interface UploadResult {
   success: boolean
   filename?: string
   compressedFilename?: string | null
+  compressionWarning?: string | null
   message?: string
   error?: string
   gitOutput?: string

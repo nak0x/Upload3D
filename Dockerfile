@@ -63,9 +63,6 @@ RUN apk add --no-cache \
 # Initialiser Git LFS au niveau système
 RUN git lfs install --system
 
-# Installer gltf-transform CLI globalement (utilisé pour la compression Draco)
-RUN npm install -g @gltf-transform/cli
-
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -76,6 +73,11 @@ ENV HOSTNAME=0.0.0.0
 # Créer un utilisateur non-root pour la sécurité
 # Note : on garde root pour les opérations git/SSH en contexte Coolify
 # Si vous souhaitez un user non-root, adaptez les permissions SSH en conséquence
+
+# Copier les packages gltf-transform pour l'API JS in-process
+COPY --from=deps /app/node_modules/@gltf-transform ./node_modules/@gltf-transform
+COPY --from=deps /app/node_modules/draco3dgltf ./node_modules/draco3dgltf
+COPY --from=deps /app/node_modules/meshoptimizer ./node_modules/meshoptimizer
 
 # Copier les artefacts de build
 COPY --from=builder /app/.next/standalone ./
