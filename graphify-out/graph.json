@@ -1,0 +1,1424 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "upload_pipeline",
+        "label": "Upload Pipeline: UploadZone \u2192 API Route \u2192 Git Push",
+        "nodes": [
+          "claudemd_uploadzone_tsx",
+          "claudemd_api_upload_route",
+          "claudemd_rungitpush"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.95,
+        "source_file": "CLAUDE.md"
+      },
+      {
+        "id": "git_storage_constraints",
+        "label": "Git Storage Constraints: LFS + Sequential Queue + execSync",
+        "nodes": [
+          "claudemd_git_lfs",
+          "claudemd_sequential_upload_queue",
+          "claudemd_execsync"
+        ],
+        "relation": "form",
+        "confidence": "INFERRED",
+        "confidence_score": 0.8,
+        "source_file": "CLAUDE.md"
+      },
+      {
+        "id": "docker_deployment_stack",
+        "label": "Docker Deployment Stack: Dockerfile + Entrypoint + Coolify",
+        "nodes": [
+          "claudemd_dockerfile",
+          "claudemd_docker_entrypoint",
+          "claudemd_coolify"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.9,
+        "source_file": "CLAUDE.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "next-env.d.ts",
+      "file_type": "code",
+      "source_file": "next-env.d.ts",
+      "source_location": "L1",
+      "id": "next_env_d_ts",
+      "community": 15
+    },
+    {
+      "label": "tailwind.config.ts",
+      "file_type": "code",
+      "source_file": "tailwind.config.ts",
+      "source_location": "L1",
+      "id": "tailwind_config_ts",
+      "community": 16
+    },
+    {
+      "label": "postcss.config.js",
+      "file_type": "code",
+      "source_file": "postcss.config.js",
+      "source_location": "L1",
+      "id": "postcss_config_js",
+      "community": 17
+    },
+    {
+      "label": "next.config.ts",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": "L1",
+      "id": "next_config_ts",
+      "community": 18
+    },
+    {
+      "label": "model-viewer.d.ts",
+      "file_type": "code",
+      "source_file": "types/model-viewer.d.ts",
+      "source_location": "L1",
+      "id": "types_model_viewer_d_ts",
+      "community": 19
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "app/layout.tsx",
+      "source_location": "L1",
+      "id": "app_layout_tsx",
+      "community": 11
+    },
+    {
+      "label": "RootLayout()",
+      "file_type": "code",
+      "source_file": "app/layout.tsx",
+      "source_location": "L9",
+      "id": "layout_rootlayout",
+      "community": 11
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "app/page.tsx",
+      "source_location": "L1",
+      "id": "app_page_tsx",
+      "community": 12
+    },
+    {
+      "label": "Home()",
+      "file_type": "code",
+      "source_file": "app/page.tsx",
+      "source_location": "L3",
+      "id": "page_home",
+      "community": 12
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L1",
+      "id": "app_api_upload_route_ts",
+      "community": 2
+    },
+    {
+      "label": "sanitizeFilename()",
+      "file_type": "code",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L21",
+      "id": "route_sanitizefilename",
+      "community": 2
+    },
+    {
+      "label": "parseUpload()",
+      "file_type": "code",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L32",
+      "id": "route_parseupload",
+      "community": 2
+    },
+    {
+      "label": "runGitPush()",
+      "file_type": "code",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L70",
+      "id": "route_rungitpush",
+      "community": 2
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L148",
+      "id": "route_post",
+      "community": 2
+    },
+    {
+      "label": "WatercolorViewer.tsx",
+      "file_type": "code",
+      "source_file": "components/WatercolorViewer.tsx",
+      "source_location": "L1",
+      "id": "components_watercolorviewer_tsx",
+      "community": 13
+    },
+    {
+      "label": "WatercolorViewer()",
+      "file_type": "code",
+      "source_file": "components/WatercolorViewer.tsx",
+      "source_location": "L27",
+      "id": "watercolorviewer_watercolorviewer",
+      "community": 13
+    },
+    {
+      "label": "UploadZone.tsx",
+      "file_type": "code",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L1",
+      "id": "components_uploadzone_tsx",
+      "community": 3
+    },
+    {
+      "label": "updateFile()",
+      "file_type": "code",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L25",
+      "id": "uploadzone_updatefile",
+      "community": 3
+    },
+    {
+      "label": "handleCancel()",
+      "file_type": "code",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L64",
+      "id": "uploadzone_handlecancel",
+      "community": 3
+    },
+    {
+      "label": "removeFile()",
+      "file_type": "code",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L66",
+      "id": "uploadzone_removefile",
+      "community": 3
+    },
+    {
+      "label": "handleReset()",
+      "file_type": "code",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L70",
+      "id": "uploadzone_handlereset",
+      "community": 3
+    },
+    {
+      "label": "PreviewModal.tsx",
+      "file_type": "code",
+      "source_file": "components/PreviewModal.tsx",
+      "source_location": "L1",
+      "id": "components_previewmodal_tsx",
+      "community": 14
+    },
+    {
+      "label": "handler()",
+      "file_type": "code",
+      "source_file": "components/PreviewModal.tsx",
+      "source_location": "L37",
+      "id": "previewmodal_handler",
+      "community": 14
+    },
+    {
+      "label": "FileRow.tsx",
+      "file_type": "code",
+      "source_file": "components/FileRow.tsx",
+      "source_location": "L1",
+      "id": "components_filerow_tsx",
+      "community": 20
+    },
+    {
+      "label": "upload.ts",
+      "file_type": "code",
+      "source_file": "lib/upload.ts",
+      "source_location": "L1",
+      "id": "lib_upload_ts",
+      "community": 4
+    },
+    {
+      "label": "formatBytes()",
+      "file_type": "code",
+      "source_file": "lib/upload.ts",
+      "source_location": "L43",
+      "id": "upload_formatbytes",
+      "community": 4
+    },
+    {
+      "label": "getFileType()",
+      "file_type": "code",
+      "source_file": "lib/upload.ts",
+      "source_location": "L51",
+      "id": "upload_getfiletype",
+      "community": 4
+    },
+    {
+      "label": "uploadSingleFile()",
+      "file_type": "code",
+      "source_file": "lib/upload.ts",
+      "source_location": "L61",
+      "id": "upload_uploadsinglefile",
+      "community": 4
+    },
+    {
+      "label": "BoilingEffect.ts",
+      "file_type": "code",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L1",
+      "id": "lib_shaders_boilingeffect_ts",
+      "community": 5
+    },
+    {
+      "label": "BoilingEffectImpl",
+      "file_type": "code",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L20",
+      "id": "boilingeffect_boilingeffectimpl",
+      "community": 5
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L21",
+      "id": "boilingeffect_boilingeffectimpl_constructor",
+      "community": 5
+    },
+    {
+      "label": ".update()",
+      "file_type": "code",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L37",
+      "id": "boilingeffect_boilingeffectimpl_update",
+      "community": 5
+    },
+    {
+      "label": "KuwaharaEffect.ts",
+      "file_type": "code",
+      "source_file": "lib/shaders/KuwaharaEffect.ts",
+      "source_location": "L1",
+      "id": "lib_shaders_kuwaharaeffect_ts",
+      "community": 9
+    },
+    {
+      "label": "KuwaharaEffectImpl",
+      "file_type": "code",
+      "source_file": "lib/shaders/KuwaharaEffect.ts",
+      "source_location": "L56",
+      "id": "kuwaharaeffect_kuwaharaeffectimpl",
+      "community": 9
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "lib/shaders/KuwaharaEffect.ts",
+      "source_location": "L57",
+      "id": "kuwaharaeffect_kuwaharaeffectimpl_constructor",
+      "community": 9
+    },
+    {
+      "label": "PaperOverlayEffect.ts",
+      "file_type": "code",
+      "source_file": "lib/shaders/PaperOverlayEffect.ts",
+      "source_location": "L1",
+      "id": "lib_shaders_paperoverlayeffect_ts",
+      "community": 10
+    },
+    {
+      "label": "PaperOverlayEffectImpl",
+      "file_type": "code",
+      "source_file": "lib/shaders/PaperOverlayEffect.ts",
+      "source_location": "L37",
+      "id": "paperoverlayeffect_paperoverlayeffectimpl",
+      "community": 10
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "lib/shaders/PaperOverlayEffect.ts",
+      "source_location": "L38",
+      "id": "paperoverlayeffect_paperoverlayeffectimpl_constructor",
+      "community": 10
+    },
+    {
+      "label": "OutlineEffect.ts",
+      "file_type": "code",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L1",
+      "id": "lib_shaders_outlineeffect_ts",
+      "community": 6
+    },
+    {
+      "label": "OutlineEffectImpl",
+      "file_type": "code",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L53",
+      "id": "outlineeffect_outlineeffectimpl",
+      "community": 6
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L54",
+      "id": "outlineeffect_outlineeffectimpl_constructor",
+      "community": 6
+    },
+    {
+      "label": ".update()",
+      "file_type": "code",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L73",
+      "id": "outlineeffect_outlineeffectimpl_update",
+      "community": 6
+    },
+    {
+      "label": "Asset Bridge 3D",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Project Overview",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_asset_bridge_3d",
+      "community": 8
+    },
+    {
+      "label": "lib/upload.ts",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_lib_upload_ts",
+      "community": 1
+    },
+    {
+      "label": "FileEntry",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_fileentry",
+      "community": 1
+    },
+    {
+      "label": "UploadResult",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_uploadresult",
+      "community": 1
+    },
+    {
+      "label": "uploadSingleFile",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_uploadsinglefile",
+      "community": 1
+    },
+    {
+      "label": "components/UploadZone.tsx",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Frontend",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_uploadzone_tsx",
+      "community": 1
+    },
+    {
+      "label": "components/FileRow.tsx",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Frontend",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_filerow_tsx",
+      "community": 1
+    },
+    {
+      "label": "app/api/upload/route.ts",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_api_upload_route",
+      "community": 0
+    },
+    {
+      "label": "parseUpload()",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_parseupload",
+      "community": 0
+    },
+    {
+      "label": "runGitPush()",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_rungitpush",
+      "community": 0
+    },
+    {
+      "label": "Upload Flow",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Upload flow",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_upload_flow",
+      "community": 1
+    },
+    {
+      "label": "Sequential Upload Queue",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Upload flow",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_sequential_upload_queue",
+      "community": 1
+    },
+    {
+      "label": "Git as Storage Layer",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > No database",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_git_as_storage",
+      "community": 8
+    },
+    {
+      "label": "UPLOAD_SECRET_KEY",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_env_upload_secret_key",
+      "community": 0
+    },
+    {
+      "label": "SSH_PRIVATE_KEY",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_env_ssh_private_key",
+      "community": 7
+    },
+    {
+      "label": "GIT_REPO_URL",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_env_git_repo_url",
+      "community": 0
+    },
+    {
+      "label": "GIT_BRANCH",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_env_git_branch",
+      "community": 0
+    },
+    {
+      "label": "Multi-stage Dockerfile",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Docker / Deployment",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_dockerfile",
+      "community": 7
+    },
+    {
+      "label": "docker-entrypoint.sh",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Docker / Deployment",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_docker_entrypoint",
+      "community": 7
+    },
+    {
+      "label": "Coolify Deployment",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Docker / Deployment",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_coolify",
+      "community": 7
+    },
+    {
+      "label": "Git LFS",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_git_lfs",
+      "community": 0
+    },
+    {
+      "label": ".gitattributes",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_gitattributes",
+      "community": 0
+    },
+    {
+      "label": "execSync (60s timeout)",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_execsync",
+      "community": 0
+    },
+    {
+      "label": "Next.js App Router",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_nextjs",
+      "community": 8
+    },
+    {
+      "label": "Rationale: Sequential Queue Prevents Git Conflicts",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_rationale_sequential_queue",
+      "community": 1
+    },
+    {
+      "label": "Rationale: Git as Stateless Storage (No DB)",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > No database",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_rationale_git_storage",
+      "community": 8
+    },
+    {
+      "label": "Rationale: execSync Keeps Git Ops Atomic",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claudemd_rationale_execsync_atomic",
+      "community": 0
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/layout.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "app_layout_tsx",
+      "_tgt": "layout_rootlayout",
+      "source": "app_layout_tsx",
+      "target": "layout_rootlayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "app_page_tsx",
+      "_tgt": "page_home",
+      "source": "app_page_tsx",
+      "target": "page_home",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "app_api_upload_route_ts",
+      "_tgt": "route_sanitizefilename",
+      "source": "app_api_upload_route_ts",
+      "target": "route_sanitizefilename",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_src": "app_api_upload_route_ts",
+      "_tgt": "route_parseupload",
+      "source": "app_api_upload_route_ts",
+      "target": "route_parseupload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_src": "app_api_upload_route_ts",
+      "_tgt": "route_rungitpush",
+      "source": "app_api_upload_route_ts",
+      "target": "route_rungitpush",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L148",
+      "weight": 1.0,
+      "_src": "app_api_upload_route_ts",
+      "_tgt": "route_post",
+      "source": "app_api_upload_route_ts",
+      "target": "route_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_src": "route_parseupload",
+      "_tgt": "route_sanitizefilename",
+      "source": "route_sanitizefilename",
+      "target": "route_parseupload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L174",
+      "weight": 1.0,
+      "_src": "route_post",
+      "_tgt": "route_parseupload",
+      "source": "route_parseupload",
+      "target": "route_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/upload/route.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "_src": "route_post",
+      "_tgt": "route_rungitpush",
+      "source": "route_rungitpush",
+      "target": "route_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/WatercolorViewer.tsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "components_watercolorviewer_tsx",
+      "_tgt": "watercolorviewer_watercolorviewer",
+      "source": "components_watercolorviewer_tsx",
+      "target": "watercolorviewer_watercolorviewer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "components_uploadzone_tsx",
+      "_tgt": "uploadzone_updatefile",
+      "source": "components_uploadzone_tsx",
+      "target": "uploadzone_updatefile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L64",
+      "weight": 1.0,
+      "_src": "components_uploadzone_tsx",
+      "_tgt": "uploadzone_handlecancel",
+      "source": "components_uploadzone_tsx",
+      "target": "uploadzone_handlecancel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_src": "components_uploadzone_tsx",
+      "_tgt": "uploadzone_removefile",
+      "source": "components_uploadzone_tsx",
+      "target": "uploadzone_removefile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/UploadZone.tsx",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_src": "components_uploadzone_tsx",
+      "_tgt": "uploadzone_handlereset",
+      "source": "components_uploadzone_tsx",
+      "target": "uploadzone_handlereset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/PreviewModal.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "components_previewmodal_tsx",
+      "_tgt": "previewmodal_handler",
+      "source": "components_previewmodal_tsx",
+      "target": "previewmodal_handler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/upload.ts",
+      "source_location": "L43",
+      "weight": 1.0,
+      "_src": "lib_upload_ts",
+      "_tgt": "upload_formatbytes",
+      "source": "lib_upload_ts",
+      "target": "upload_formatbytes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/upload.ts",
+      "source_location": "L51",
+      "weight": 1.0,
+      "_src": "lib_upload_ts",
+      "_tgt": "upload_getfiletype",
+      "source": "lib_upload_ts",
+      "target": "upload_getfiletype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/upload.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "lib_upload_ts",
+      "_tgt": "upload_uploadsinglefile",
+      "source": "lib_upload_ts",
+      "target": "upload_uploadsinglefile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "lib_shaders_boilingeffect_ts",
+      "_tgt": "boilingeffect_boilingeffectimpl",
+      "source": "lib_shaders_boilingeffect_ts",
+      "target": "boilingeffect_boilingeffectimpl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "boilingeffect_boilingeffectimpl",
+      "_tgt": "boilingeffect_boilingeffectimpl_constructor",
+      "source": "boilingeffect_boilingeffectimpl",
+      "target": "boilingeffect_boilingeffectimpl_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/BoilingEffect.ts",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "boilingeffect_boilingeffectimpl",
+      "_tgt": "boilingeffect_boilingeffectimpl_update",
+      "source": "boilingeffect_boilingeffectimpl",
+      "target": "boilingeffect_boilingeffectimpl_update",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/KuwaharaEffect.ts",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_src": "lib_shaders_kuwaharaeffect_ts",
+      "_tgt": "kuwaharaeffect_kuwaharaeffectimpl",
+      "source": "lib_shaders_kuwaharaeffect_ts",
+      "target": "kuwaharaeffect_kuwaharaeffectimpl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/KuwaharaEffect.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "kuwaharaeffect_kuwaharaeffectimpl",
+      "_tgt": "kuwaharaeffect_kuwaharaeffectimpl_constructor",
+      "source": "kuwaharaeffect_kuwaharaeffectimpl",
+      "target": "kuwaharaeffect_kuwaharaeffectimpl_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/PaperOverlayEffect.ts",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "lib_shaders_paperoverlayeffect_ts",
+      "_tgt": "paperoverlayeffect_paperoverlayeffectimpl",
+      "source": "lib_shaders_paperoverlayeffect_ts",
+      "target": "paperoverlayeffect_paperoverlayeffectimpl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/PaperOverlayEffect.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "paperoverlayeffect_paperoverlayeffectimpl",
+      "_tgt": "paperoverlayeffect_paperoverlayeffectimpl_constructor",
+      "source": "paperoverlayeffect_paperoverlayeffectimpl",
+      "target": "paperoverlayeffect_paperoverlayeffectimpl_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "lib_shaders_outlineeffect_ts",
+      "_tgt": "outlineeffect_outlineeffectimpl",
+      "source": "lib_shaders_outlineeffect_ts",
+      "target": "outlineeffect_outlineeffectimpl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L54",
+      "weight": 1.0,
+      "_src": "outlineeffect_outlineeffectimpl",
+      "_tgt": "outlineeffect_outlineeffectimpl_constructor",
+      "source": "outlineeffect_outlineeffectimpl",
+      "target": "outlineeffect_outlineeffectimpl_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/shaders/OutlineEffect.ts",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_src": "outlineeffect_outlineeffectimpl",
+      "_tgt": "outlineeffect_outlineeffectimpl_update",
+      "source": "outlineeffect_outlineeffectimpl",
+      "target": "outlineeffect_outlineeffectimpl_update",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture",
+      "weight": 1.0,
+      "_src": "claudemd_asset_bridge_3d",
+      "_tgt": "claudemd_nextjs",
+      "source": "claudemd_asset_bridge_3d",
+      "target": "claudemd_nextjs"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > No database",
+      "weight": 1.0,
+      "_src": "claudemd_asset_bridge_3d",
+      "_tgt": "claudemd_git_as_storage",
+      "source": "claudemd_asset_bridge_3d",
+      "target": "claudemd_git_as_storage"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "weight": 1.0,
+      "_src": "claudemd_lib_upload_ts",
+      "_tgt": "claudemd_fileentry",
+      "source": "claudemd_lib_upload_ts",
+      "target": "claudemd_fileentry"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "weight": 1.0,
+      "_src": "claudemd_lib_upload_ts",
+      "_tgt": "claudemd_uploadresult",
+      "source": "claudemd_lib_upload_ts",
+      "target": "claudemd_uploadresult"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Shared logic",
+      "weight": 1.0,
+      "_src": "claudemd_lib_upload_ts",
+      "_tgt": "claudemd_uploadsinglefile",
+      "source": "claudemd_lib_upload_ts",
+      "target": "claudemd_uploadsinglefile"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Frontend",
+      "weight": 1.0,
+      "_src": "claudemd_uploadzone_tsx",
+      "_tgt": "claudemd_lib_upload_ts",
+      "source": "claudemd_lib_upload_ts",
+      "target": "claudemd_uploadzone_tsx"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Frontend",
+      "weight": 1.0,
+      "_src": "claudemd_uploadzone_tsx",
+      "_tgt": "claudemd_sequential_upload_queue",
+      "source": "claudemd_uploadzone_tsx",
+      "target": "claudemd_sequential_upload_queue"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Frontend",
+      "weight": 1.0,
+      "_src": "claudemd_uploadzone_tsx",
+      "_tgt": "claudemd_filerow_tsx",
+      "source": "claudemd_uploadzone_tsx",
+      "target": "claudemd_filerow_tsx"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Upload flow",
+      "weight": 1.0,
+      "_src": "claudemd_upload_flow",
+      "_tgt": "claudemd_uploadzone_tsx",
+      "source": "claudemd_uploadzone_tsx",
+      "target": "claudemd_upload_flow"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "weight": 1.0,
+      "_src": "claudemd_api_upload_route",
+      "_tgt": "claudemd_parseupload",
+      "source": "claudemd_api_upload_route",
+      "target": "claudemd_parseupload"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "weight": 1.0,
+      "_src": "claudemd_api_upload_route",
+      "_tgt": "claudemd_rungitpush",
+      "source": "claudemd_api_upload_route",
+      "target": "claudemd_rungitpush"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "weight": 1.0,
+      "_src": "claudemd_api_upload_route",
+      "_tgt": "claudemd_execsync",
+      "source": "claudemd_api_upload_route",
+      "target": "claudemd_execsync"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "weight": 1.0,
+      "_src": "claudemd_api_upload_route",
+      "_tgt": "claudemd_env_upload_secret_key",
+      "source": "claudemd_api_upload_route",
+      "target": "claudemd_env_upload_secret_key"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Upload flow",
+      "weight": 1.0,
+      "_src": "claudemd_upload_flow",
+      "_tgt": "claudemd_api_upload_route",
+      "source": "claudemd_api_upload_route",
+      "target": "claudemd_upload_flow"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "weight": 1.0,
+      "_src": "claudemd_parseupload",
+      "_tgt": "claudemd_rungitpush",
+      "source": "claudemd_parseupload",
+      "target": "claudemd_rungitpush"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Backend",
+      "weight": 1.0,
+      "_src": "claudemd_rungitpush",
+      "_tgt": "claudemd_git_lfs",
+      "source": "claudemd_rungitpush",
+      "target": "claudemd_git_lfs"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "weight": 1.0,
+      "_src": "claudemd_rungitpush",
+      "_tgt": "claudemd_env_ssh_private_key",
+      "source": "claudemd_rungitpush",
+      "target": "claudemd_env_ssh_private_key"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "weight": 1.0,
+      "_src": "claudemd_rungitpush",
+      "_tgt": "claudemd_env_git_repo_url",
+      "source": "claudemd_rungitpush",
+      "target": "claudemd_env_git_repo_url"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "Environment Variables",
+      "weight": 1.0,
+      "_src": "claudemd_rungitpush",
+      "_tgt": "claudemd_env_git_branch",
+      "source": "claudemd_rungitpush",
+      "target": "claudemd_env_git_branch"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > Upload flow",
+      "weight": 1.0,
+      "_src": "claudemd_upload_flow",
+      "_tgt": "claudemd_sequential_upload_queue",
+      "source": "claudemd_upload_flow",
+      "target": "claudemd_sequential_upload_queue"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "weight": 1.0,
+      "_src": "claudemd_rationale_sequential_queue",
+      "_tgt": "claudemd_sequential_upload_queue",
+      "source": "claudemd_sequential_upload_queue",
+      "target": "claudemd_rationale_sequential_queue"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture",
+      "weight": 1.0,
+      "_src": "claudemd_sequential_upload_queue",
+      "_tgt": "claudemd_git_as_storage",
+      "source": "claudemd_sequential_upload_queue",
+      "target": "claudemd_git_as_storage"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Architecture > No database",
+      "weight": 1.0,
+      "_src": "claudemd_rationale_git_storage",
+      "_tgt": "claudemd_git_as_storage",
+      "source": "claudemd_git_as_storage",
+      "target": "claudemd_rationale_git_storage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Docker / Deployment",
+      "weight": 1.0,
+      "_src": "claudemd_docker_entrypoint",
+      "_tgt": "claudemd_env_ssh_private_key",
+      "source": "claudemd_env_ssh_private_key",
+      "target": "claudemd_docker_entrypoint"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Docker / Deployment",
+      "weight": 1.0,
+      "_src": "claudemd_dockerfile",
+      "_tgt": "claudemd_docker_entrypoint",
+      "source": "claudemd_dockerfile",
+      "target": "claudemd_docker_entrypoint"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "CLAUDE.md",
+      "source_location": "Docker / Deployment",
+      "weight": 1.0,
+      "_src": "claudemd_coolify",
+      "_tgt": "claudemd_dockerfile",
+      "source": "claudemd_dockerfile",
+      "target": "claudemd_coolify"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "weight": 1.0,
+      "_src": "claudemd_git_lfs",
+      "_tgt": "claudemd_gitattributes",
+      "source": "claudemd_git_lfs",
+      "target": "claudemd_gitattributes"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Key Design Constraints",
+      "weight": 1.0,
+      "_src": "claudemd_rationale_execsync_atomic",
+      "_tgt": "claudemd_execsync",
+      "source": "claudemd_execsync",
+      "target": "claudemd_rationale_execsync_atomic"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "upload_pipeline",
+      "label": "Upload Pipeline: UploadZone \u2192 API Route \u2192 Git Push",
+      "nodes": [
+        "claudemd_uploadzone_tsx",
+        "claudemd_api_upload_route",
+        "claudemd_rungitpush"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "git_storage_constraints",
+      "label": "Git Storage Constraints: LFS + Sequential Queue + execSync",
+      "nodes": [
+        "claudemd_git_lfs",
+        "claudemd_sequential_upload_queue",
+        "claudemd_execsync"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "docker_deployment_stack",
+      "label": "Docker Deployment Stack: Dockerfile + Entrypoint + Coolify",
+      "nodes": [
+        "claudemd_dockerfile",
+        "claudemd_docker_entrypoint",
+        "claudemd_coolify"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "CLAUDE.md"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFileSync, mkdirSync } from 'fs'
+import sharp from 'sharp'
+import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join, extname, basename } from 'path'
 import { execSync } from 'child_process'
 
@@ -11,6 +12,10 @@ export const dynamic = 'force-dynamic'
 const MODEL_EXTENSIONS = new Set(['.glb', '.gltf', '.fbx'])
 const TEXTURE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.ktx2'])
 const ALL_ALLOWED_EXTENSIONS = new Set([...MODEL_EXTENSIONS, ...TEXTURE_EXTENSIONS])
+
+// Formats compressibles
+const COMPRESSIBLE_TEXTURE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg'])
+const COMPRESSIBLE_MODEL_EXTENSIONS = new Set(['.glb', '.gltf'])
 
 const MODELS_DIR = join(process.cwd(), 'public', 'models')
 const TEXTURES_DIR = join(process.cwd(), 'public', 'textures')
@@ -26,10 +31,14 @@ function sanitizeFilename(name: string): string {
 }
 
 // ─────────────────────────────────────────────
-// Utilitaire : parser le multipart via req.formData()
-// Retourne { filename, savedPath } ou throw
+// Parser le multipart — retourne les données sans écrire sur disque
 // ─────────────────────────────────────────────
-async function parseUpload(req: NextRequest): Promise<{ filename: string; savedPath: string; relPath: string }> {
+async function parseUpload(req: NextRequest): Promise<{
+  filename: string
+  buffer: Buffer
+  ext: string
+  isTexture: boolean
+}> {
   const formData = await req.formData()
   const file = formData.get('file') as File | null
   const assetName = (formData.get('assetName') as string | null)?.trim()
@@ -42,32 +51,93 @@ async function parseUpload(req: NextRequest): Promise<{ filename: string; savedP
   const ext = extname(originalSafe).toLowerCase()
 
   if (!ALL_ALLOWED_EXTENSIONS.has(ext)) {
-    throw new Error(`Extension non autorisée : "${ext}". Formats acceptés : .glb, .gltf, .fbx, .png, .jpg, .jpeg, .webp, .ktx2`)
+    throw new Error(
+      `Extension non autorisée : "${ext}". Formats acceptés : .glb, .gltf, .fbx, .png, .jpg, .jpeg, .webp, .ktx2`
+    )
   }
 
-  // Renommer avec le nom fourni par le designer si disponible
   const baseName = assetName
-    ? sanitizeFilename(assetName).replace(/\.[^.]+$/, '') // retirer extension si présente
+    ? sanitizeFilename(assetName).replace(/\.[^.]+$/, '')
     : originalSafe.replace(/\.[^.]+$/, '')
   const filename = `${baseName}${ext}`
-
   const isTexture = TEXTURE_EXTENSIONS.has(ext)
-  const destDir = isTexture ? TEXTURES_DIR : MODELS_DIR
-  const relPath = join('public', isTexture ? 'textures' : 'models', filename)
-
-  mkdirSync(destDir, { recursive: true })
-
-  const savedPath = join(destDir, filename)
   const buffer = Buffer.from(await file.arrayBuffer())
-  writeFileSync(savedPath, buffer)
 
-  return { filename, savedPath, relPath }
+  return { filename, buffer, ext, isTexture }
 }
 
 // ─────────────────────────────────────────────
-// Utilitaire : exécuter la séquence git
+// Écrire l'original + générer la version compressée
+// Retourne tous les chemins relatifs à git add
 // ─────────────────────────────────────────────
-function runGitPush(filename: string, relPath: string): { output: string } {
+async function writeAndCompress(
+  filename: string,
+  buffer: Buffer,
+  ext: string,
+  isTexture: boolean
+): Promise<{ relPaths: string[]; compressedFilename: string | null; compressionWarning?: string }> {
+  const baseDir = isTexture ? TEXTURES_DIR : MODELS_DIR
+  const baseRelDir = join('public', isTexture ? 'textures' : 'models')
+  const compressedDir = join(baseDir, 'compressed')
+  const compressedRelDir = join(baseRelDir, 'compressed')
+
+  mkdirSync(baseDir, { recursive: true })
+
+  // Écriture de l'original
+  const savedPath = join(baseDir, filename)
+  writeFileSync(savedPath, buffer)
+  const relPaths: string[] = [join(baseRelDir, filename)]
+
+  let compressedFilename: string | null = null
+  let compressionWarning: string | undefined
+
+  // Textures PNG/JPG → WebP
+  if (isTexture && COMPRESSIBLE_TEXTURE_EXTENSIONS.has(ext)) {
+    try {
+      mkdirSync(compressedDir, { recursive: true })
+      compressedFilename = filename.replace(/\.[^.]+$/, '.webp')
+      const webpBuffer = await sharp(buffer).webp({ quality: 85 }).toBuffer()
+      writeFileSync(join(compressedDir, compressedFilename), webpBuffer)
+      relPaths.push(join(compressedRelDir, compressedFilename))
+    } catch (err) {
+      compressionWarning = `Compression WebP échouée : ${err instanceof Error ? err.message : err}`
+      compressedFilename = null
+    }
+  }
+
+  // Modèles GLB/GLTF → Draco
+  if (!isTexture && COMPRESSIBLE_MODEL_EXTENSIONS.has(ext)) {
+    try {
+      mkdirSync(compressedDir, { recursive: true })
+      compressedFilename = filename
+      const compressedPath = join(compressedDir, compressedFilename)
+      // Cherche le bin local en premier, puis le global (Docker)
+      const localBin = join(process.cwd(), 'node_modules', '.bin', 'gltf-transform')
+      const gltfTransformBin = existsSync(localBin) ? localBin : 'gltf-transform'
+      execSync(`"${gltfTransformBin}" draco "${savedPath}" "${compressedPath}"`, {
+        timeout: 120_000,
+        encoding: 'utf-8',
+      })
+      relPaths.push(join(compressedRelDir, compressedFilename))
+    } catch (err) {
+      compressionWarning = `Compression Draco échouée : ${err instanceof Error ? err.message : err}`
+      compressedFilename = null
+    }
+  }
+
+  return { relPaths, compressedFilename, compressionWarning }
+}
+
+// ─────────────────────────────────────────────
+// Séquence git : sync → écriture → compression → commit → push
+// Les fichiers sont écrits APRÈS le reset pour éviter tout écrasement
+// ─────────────────────────────────────────────
+async function runGitPush(
+  filename: string,
+  buffer: Buffer,
+  ext: string,
+  isTexture: boolean
+): Promise<{ output: string; compressedFilename: string | null; compressionWarning?: string }> {
   const branch = process.env.GIT_BRANCH ?? 'main'
   const repoUrl = process.env.GIT_REPO_URL
 
@@ -77,7 +147,8 @@ function runGitPush(filename: string, relPath: string): { output: string } {
     timeout: 60_000,
     env: {
       ...process.env,
-      GIT_SSH_COMMAND: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/root/.ssh/known_hosts',
+      GIT_SSH_COMMAND:
+        'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/root/.ssh/known_hosts',
       GIT_AUTHOR_NAME: 'Asset Bridge 3D',
       GIT_AUTHOR_EMAIL: 'deploy@assetbridge.local',
       GIT_COMMITTER_NAME: 'Asset Bridge 3D',
@@ -85,18 +156,14 @@ function runGitPush(filename: string, relPath: string): { output: string } {
     },
   }
 
-  // S'assurer que le repo est initialisé et que le remote est configuré
+  // S'assurer que le repo est initialisé
   try {
     execSync('git rev-parse --git-dir', { cwd: process.cwd(), stdio: 'ignore' })
   } catch {
-    // Pas encore de repo git — initialiser
     execSync('git init && git lfs install', { ...execOpts, stdio: 'pipe' })
-
     if (repoUrl) {
       execSync(`git remote add origin "${repoUrl}"`, { ...execOpts, stdio: 'pipe' })
     }
-
-    // Récupérer l'historique distant si possible
     try {
       execSync(`git fetch origin ${branch}`, { ...execOpts, stdio: 'pipe', timeout: 30_000 })
       execSync(`git checkout -b ${branch} --track origin/${branch}`, { ...execOpts, stdio: 'pipe' })
@@ -105,23 +172,36 @@ function runGitPush(filename: string, relPath: string): { output: string } {
     }
   }
 
-  // Mettre à jour l'URL du remote avec le token (au cas où elle aurait changé)
   if (repoUrl) {
     execSync(`git remote set-url origin "${repoUrl}"`, { ...execOpts, stdio: 'pipe' })
   }
 
-  const timestamp = new Date().toISOString()
-
   let output = ''
 
-  // Sync avec le remote avant de committer
+  // Sync avec le remote AVANT d'écrire sur disque
   output += execSync(`git fetch origin ${branch}`, execOpts)
   output += execSync(`git reset --hard origin/${branch}`, execOpts)
 
-  // git add
-  output += execSync(`git add "${relPath}"`, execOpts)
+  // Écriture + compression (après le reset pour éviter l'écrasement)
+  const { relPaths, compressedFilename, compressionWarning } = await writeAndCompress(
+    filename,
+    buffer,
+    ext,
+    isTexture
+  )
 
-  // git commit — ignoré si rien à committer (fichier identique)
+  if (compressionWarning) {
+    console.warn(`[upload] ${compressionWarning}`)
+  }
+
+  const timestamp = new Date().toISOString()
+
+  // git add : original + compressé
+  for (const relPath of relPaths) {
+    output += execSync(`git add "${relPath}"`, execOpts)
+  }
+
+  // git commit
   try {
     output += execSync(`git commit -m "Design Update: ${filename} [${timestamp}]"`, execOpts)
   } catch (err) {
@@ -139,7 +219,7 @@ function runGitPush(filename: string, relPath: string): { output: string } {
   // git push
   output += execSync(`git push origin ${branch}`, execOpts)
 
-  return { output }
+  return { output, compressedFilename, compressionWarning }
 }
 
 // ─────────────────────────────────────────────
@@ -160,37 +240,45 @@ export async function POST(req: NextRequest) {
 
   if (!secret || secret !== expectedSecret) {
     return NextResponse.json(
-      { success: false, error: 'Clé d\'authentification invalide' },
+      { success: false, error: "Clé d'authentification invalide" },
       { status: 401 }
     )
   }
 
-  // 2. Parse & écriture disque
+  // 2. Parse multipart
   let filename: string
-  let savedPath: string
-  let relPath: string
+  let buffer: Buffer
+  let ext: string
+  let isTexture: boolean
 
   try {
-    ;({ filename, savedPath, relPath } = await parseUpload(req))
-    console.log(`[upload] Fichier reçu et sauvegardé : ${savedPath}`)
+    ;({ filename, buffer, ext, isTexture } = await parseUpload(req))
+    console.log(`[upload] Fichier reçu : ${filename}`)
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erreur inconnue lors de l\'upload'
+    const message = err instanceof Error ? err.message : "Erreur inconnue lors de l'upload"
     console.error('[upload] Erreur parsing :', message)
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 400 }
-    )
+    return NextResponse.json({ success: false, error: message }, { status: 400 })
   }
 
-  // 3. Séquence git push
+  // 3. Sync git + écriture + compression + commit + push
   try {
-    const { output } = runGitPush(filename, relPath)
+    const { output, compressedFilename, compressionWarning } = await runGitPush(
+      filename,
+      buffer,
+      ext,
+      isTexture
+    )
     console.log(`[upload] Git push réussi pour ${filename}`)
+
+    const message = compressedFilename
+      ? `"${filename}" et sa version compressée sauvegardés et poussés sur Git.`
+      : `"${filename}" sauvegardé et poussé sur Git avec succès.`
 
     return NextResponse.json({
       success: true,
       filename,
-      message: `"${filename}" sauvegardé et poussé sur Git avec succès.`,
+      compressedFilename,
+      message: compressionWarning ? `${message} (avertissement : ${compressionWarning})` : message,
       gitOutput: output,
     })
   } catch (err) {

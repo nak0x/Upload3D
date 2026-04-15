@@ -14,6 +14,7 @@ export interface FileEntry {
 export interface UploadResult {
   success: boolean
   filename?: string
+  compressedFilename?: string | null
   message?: string
   error?: string
   gitOutput?: string

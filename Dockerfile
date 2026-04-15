@@ -48,15 +48,22 @@ LABEL maintainer="Asset Bridge 3D"
 LABEL description="Interface d'upload 3D sécurisée avec Git LFS"
 
 # Outils runtime : git, git-lfs, openssh (pour le git push au runtime)
+# python3/make/g++ : nécessaires pour compiler sharp (module natif Node.js)
 RUN apk add --no-cache \
     git \
     git-lfs \
     openssh-client \
     ca-certificates \
-    tini
+    tini \
+    python3 \
+    make \
+    g++
 
 # Initialiser Git LFS au niveau système
 RUN git lfs install --system
+
+# Installer gltf-transform CLI globalement (utilisé pour la compression Draco)
+RUN npm install -g @gltf-transform/cli
 
 WORKDIR /app
 
@@ -75,8 +82,8 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.gitattributes ./.gitattributes
 
-# S'assurer que le dossier models existe (sera écrasé par le volume Coolify)
-RUN mkdir -p ./public/models
+# Créer les dossiers d'assets (seront écrasés par le volume Coolify si configuré)
+RUN mkdir -p ./public/models/compressed ./public/textures/compressed
 
 # Copier le script d'entrée
 COPY docker-entrypoint.sh /docker-entrypoint.sh
