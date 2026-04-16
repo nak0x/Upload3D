@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -15,22 +16,22 @@ const config: Config = {
           200: '#DDD6FE',
           300: '#C4B5FD',
           400: '#A78BFA',
-          500: '#7C5CFC', // violet principal (image)
+          500: '#7C5CFC',
           600: '#6D28D9',
           700: '#5B21B6',
           900: '#2E1065',
         },
-        // Rose/magenta (dégradé image)
-        rose: {
-          300: '#FDA4C4',
-          400: '#F472B6',
-          500: '#EC4899',
-        },
         surface: {
           DEFAULT: '#FFFFFF',
-          soft:    '#F9F5FF', // fond global lavande très clair
-          muted:   '#F3EEFF', // fond carte/panel
-          border:  '#E5D9FD', // bordure douce
+          soft:    '#F9F5FF',
+          muted:   '#F3EEFF',
+          border:  '#E5D9FD',
+        },
+        night: {
+          bg:     '#0D0A1E',
+          card:   '#161028',
+          muted:  '#1E1538',
+          border: '#2D1F58',
         },
       },
       fontFamily: {

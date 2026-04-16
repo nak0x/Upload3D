@@ -10,16 +10,16 @@
   }
 
   body {
-    @apply bg-surface-soft text-gray-800 antialiased;
+    @apply bg-surface-soft text-gray-800 antialiased dark:bg-night-bg dark:text-gray-100;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-brand-500 to-rose-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-brand-400 to-brand-700 bg-clip-text text-transparent;
   }
 
   .bg-gradient-brand {
-    @apply bg-gradient-to-r from-brand-500 to-rose-400;
+    @apply bg-gradient-to-br from-brand-500 to-brand-700;
   }
 }

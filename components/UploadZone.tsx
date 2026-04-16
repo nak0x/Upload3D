@@ -41,7 +41,6 @@ export default function UploadZone() {
     setFiles((prev) => prev.map((f, i) => i === index ? { ...f, ...patch } : f))
   }
 
-  // ── Upload séquentiel de tous les fichiers ──
   const handleUpload = useCallback(async () => {
     if (!secret.trim()) {
       setGlobalError('Veuillez saisir la clé d\'accès avant d\'uploader.')
@@ -101,7 +100,6 @@ export default function UploadZone() {
     setIsUploading(false)
   }
 
-  // ── react-dropzone ──
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     if (rejectedFiles.length > 0) {
       const codes = rejectedFiles[0].errors.map((e) => e.code).join(', ')
@@ -141,17 +139,23 @@ export default function UploadZone() {
   // ─────────────────────────────────────────────
   return (
     <>
+    {/* Toasts */}
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
       {toasts.map((toast) => (
-        <div key={toast.id} className={`flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm max-w-sm bg-white
-          ${toast.type === 'success' ? 'border-green-200' : toast.type === 'warning' ? 'border-amber-200' : 'border-red-200'}`}>
+        <div key={toast.id} className={`flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm max-w-sm
+          bg-white dark:bg-night-card
+          ${toast.type === 'success'
+            ? 'border-green-200 dark:border-green-800'
+            : toast.type === 'warning'
+            ? 'border-amber-200 dark:border-amber-800'
+            : 'border-red-200 dark:border-red-800'}`}>
           <span className={`mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold
             ${toast.type === 'success' ? 'bg-green-500' : toast.type === 'warning' ? 'bg-amber-400' : 'bg-red-500'}`}>
             {toast.type === 'success' ? '✓' : toast.type === 'warning' ? '!' : '✕'}
           </span>
           <div className="min-w-0">
-            <p className="font-medium text-gray-700 truncate">{toast.title}</p>
-            {toast.detail && <p className="text-xs text-gray-400 mt-0.5">{toast.detail}</p>}
+            <p className="font-medium text-gray-700 dark:text-gray-200 truncate">{toast.title}</p>
+            {toast.detail && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{toast.detail}</p>}
           </div>
         </div>
       ))}
@@ -161,7 +165,7 @@ export default function UploadZone() {
 
       {/* Clé d'accès */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">Clé d&apos;accès</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Clé d&apos;accès</label>
         <div className="relative">
           <input
             type={secretVisible ? 'text' : 'password'}
@@ -169,15 +173,19 @@ export default function UploadZone() {
             onChange={(e) => setSecret(e.target.value)}
             placeholder="Saisir la clé secrète…"
             disabled={isUploading}
-            className="w-full bg-white border border-surface-border rounded-xl px-4 py-2.5 pr-12
-                       text-gray-800 placeholder-gray-300 text-sm shadow-soft
-                       focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400
+            className="w-full bg-white dark:bg-night-card
+                       border border-surface-border dark:border-night-border
+                       rounded-xl px-4 py-2.5 pr-12
+                       text-gray-800 dark:text-gray-100
+                       placeholder-gray-300 dark:placeholder-gray-600
+                       text-sm shadow-soft
+                       focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400
                        disabled:opacity-50 disabled:cursor-not-allowed transition"
           />
           <button
             type="button"
             onClick={() => setSecretVisible((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition"
             tabIndex={-1}
           >
             {secretVisible ? (
@@ -196,9 +204,10 @@ export default function UploadZone() {
 
       {/* Nom de l'asset */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Nom de l&apos;asset
-          <span className="text-gray-400 font-normal ml-2">— nom commun pour le modèle et la texture</span>
+          <span className="text-brand-400 dark:text-brand-500 font-normal ml-1.5">optionnel</span>
+          <span className="text-gray-400 dark:text-gray-600 font-normal ml-2">— nom commun pour le modèle et la texture</span>
         </label>
         <input
           type="text"
@@ -206,9 +215,13 @@ export default function UploadZone() {
           onChange={(e) => setAssetName(e.target.value)}
           placeholder="ex : clocher, sol_pierre, mur_brique…"
           disabled={isUploading}
-          className="w-full bg-white border border-surface-border rounded-xl px-4 py-2.5
-                     text-gray-800 placeholder-gray-300 text-sm font-mono shadow-soft
-                     focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400
+          className="w-full bg-white dark:bg-night-card
+                     border border-surface-border dark:border-night-border
+                     rounded-xl px-4 py-2.5
+                     text-gray-800 dark:text-gray-100
+                     placeholder-gray-300 dark:placeholder-gray-600
+                     text-sm font-mono shadow-soft
+                     focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400
                      disabled:opacity-50 disabled:cursor-not-allowed transition"
         />
       </div>
@@ -217,20 +230,23 @@ export default function UploadZone() {
       <div
         {...getRootProps()}
         className={`
-          relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 bg-white shadow-soft
-          ${isUploading ? 'cursor-not-allowed opacity-60 border-surface-border' : ''}
-          ${isDragReject ? 'border-red-400 bg-red-50' : ''}
-          ${isDragActive && !isDragReject ? 'border-brand-400 bg-brand-50 scale-[1.01]' : ''}
+          relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 shadow-soft
+          bg-white dark:bg-night-card
+          ${isUploading ? 'cursor-not-allowed opacity-60 border-surface-border dark:border-night-border' : ''}
+          ${isDragReject ? 'border-red-400 bg-red-50 dark:bg-red-950/20' : ''}
+          ${isDragActive && !isDragReject ? 'border-brand-400 bg-brand-50 dark:bg-brand-900/20 scale-[1.01]' : ''}
           ${!isDragActive && !isDragReject && !isUploading
-            ? 'border-surface-border hover:border-brand-300 hover:bg-brand-50/40'
+            ? 'border-surface-border dark:border-night-border hover:border-brand-400 hover:bg-brand-50/40 dark:hover:bg-brand-900/10'
             : ''}
         `}
       >
         <input {...getInputProps()} />
         <div className="flex justify-center mb-3">
           <div className={`w-12 h-12 rounded-full flex items-center justify-center transition
-            ${isDragActive ? 'bg-brand-200' : 'bg-brand-100'}`}>
-            <svg className={`w-6 h-6 transition ${isDragActive ? 'text-brand-600' : 'text-brand-500'}`}
+            ${isDragActive
+              ? 'bg-brand-200 dark:bg-brand-800'
+              : 'bg-brand-100 dark:bg-night-muted'}`}>
+            <svg className={`w-6 h-6 transition ${isDragActive ? 'text-brand-600 dark:text-brand-300' : 'text-brand-500 dark:text-brand-400'}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round"
                 d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
@@ -240,14 +256,14 @@ export default function UploadZone() {
         {isDragReject ? (
           <p className="text-sm font-medium text-red-500">Format non supporté</p>
         ) : isDragActive ? (
-          <p className="text-sm font-medium text-brand-600">Relâchez pour ajouter</p>
+          <p className="text-sm font-medium text-brand-600 dark:text-brand-400">Relâchez pour ajouter</p>
         ) : (
           <>
-            <p className="text-sm font-medium text-gray-600">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Glissez vos fichiers ici
-              <span className="text-gray-400 font-normal"> ou cliquez pour parcourir</span>
+              <span className="text-gray-400 dark:text-gray-500 font-normal"> ou cliquez pour parcourir</span>
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">
               Modèles : .glb, .gltf, .fbx · Textures : .png, .jpg, .webp, .ktx2
             </p>
           </>
@@ -279,7 +295,7 @@ export default function UploadZone() {
             onClick={handleUpload}
             className="flex-1 bg-gradient-brand hover:opacity-90 text-white font-medium text-sm
                        py-2.5 px-6 rounded-xl shadow-soft transition-opacity duration-150
-                       focus:outline-none focus:ring-2 focus:ring-brand-300"
+                       focus:outline-none focus:ring-2 focus:ring-brand-400"
           >
             Uploader {files.filter(f => f.status !== 'success').length > 1
               ? `${files.filter(f => f.status !== 'success').length} fichiers`
@@ -290,8 +306,11 @@ export default function UploadZone() {
         {isUploading && (
           <button
             onClick={handleCancel}
-            className="flex-1 bg-surface-muted hover:bg-brand-100 text-gray-600 font-medium text-sm
-                       py-2.5 px-6 rounded-xl border border-surface-border transition-colors duration-150"
+            className="flex-1 bg-surface-muted dark:bg-night-muted
+                       hover:bg-brand-100 dark:hover:bg-night-border
+                       text-gray-600 dark:text-gray-300 font-medium text-sm
+                       py-2.5 px-6 rounded-xl border border-surface-border dark:border-night-border
+                       transition-colors duration-150"
           >
             Annuler le fichier en cours
           </button>
@@ -300,8 +319,11 @@ export default function UploadZone() {
         {(allDone || hasErrors) && !isUploading && (
           <button
             onClick={handleReset}
-            className="flex-1 bg-surface-muted hover:bg-brand-100 text-gray-600 font-medium text-sm
-                       py-2.5 px-6 rounded-xl border border-surface-border transition-colors duration-150"
+            className="flex-1 bg-surface-muted dark:bg-night-muted
+                       hover:bg-brand-100 dark:hover:bg-night-border
+                       text-gray-600 dark:text-gray-300 font-medium text-sm
+                       py-2.5 px-6 rounded-xl border border-surface-border dark:border-night-border
+                       transition-colors duration-150"
           >
             {allDone ? 'Tout effacer' : 'Réessayer'}
           </button>

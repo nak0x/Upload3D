@@ -15,7 +15,7 @@ export default function FileRow({ entry, onRemove }: FileRowProps) {
 
   return (
     <>
-    <div className="flex items-center gap-3 bg-white border border-surface-border rounded-xl px-4 py-3 shadow-soft">
+    <div className="flex items-center gap-3 bg-white dark:bg-night-card border border-surface-border dark:border-night-border rounded-xl px-4 py-3 shadow-soft">
 
       {/* Icône statut */}
       <div className="shrink-0">
@@ -39,7 +39,7 @@ export default function FileRow({ entry, onRemove }: FileRowProps) {
             </svg>
           </div>
         ) : (
-          <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-surface-muted dark:bg-night-muted flex items-center justify-center">
             <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
@@ -50,10 +50,12 @@ export default function FileRow({ entry, onRemove }: FileRowProps) {
       {/* Infos fichier */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700 font-mono truncate">{entry.file.name}</span>
+          <span className="text-sm text-gray-700 dark:text-gray-200 font-mono truncate">{entry.file.name}</span>
           {type && (
             <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded-full
-              ${type === 'model' ? 'bg-brand-100 text-brand-600' : 'bg-rose-100 text-rose-500'}`}>
+              ${type === 'model'
+                ? 'bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-300'
+                : 'bg-brand-200 dark:bg-brand-900/60 text-brand-700 dark:text-brand-400'}`}>
               {type === 'model' ? '3D' : 'Texture'}
             </span>
           )}
@@ -71,7 +73,7 @@ export default function FileRow({ entry, onRemove }: FileRowProps) {
           )}
         </div>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs text-gray-400">{formatBytes(entry.file.size)}</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{formatBytes(entry.file.size)}</span>
           {entry.status === 'error' && entry.error && (
             <span className="text-xs text-red-400 truncate">{entry.error}</span>
           )}
