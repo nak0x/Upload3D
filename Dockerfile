@@ -93,9 +93,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.gitattributes ./.gitattributes
 
 # Next.js 16 ajoute "type": "module" dans le package.json standalone,
-# ce qui casse server.js qui utilise CommonJS require().
-# node -e tourne toujours en CJS, indépendamment du champ "type" du package.json.
-RUN node -e "var fs=require('fs');var p=JSON.parse(fs.readFileSync('package.json','utf8'));delete p.type;fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
+# ce qui casse server.js CommonJS. On écrase avec un package.json minimal sans "type".
+RUN printf '{"name":"asset-bridge-3d","version":"0.1.0"}\n' > package.json
 
 # Créer les dossiers d'assets (seront écrasés par le volume Coolify si configuré)
 RUN mkdir -p ./public/models/compressed ./public/textures/compressed
