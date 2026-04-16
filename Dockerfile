@@ -92,6 +92,10 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.gitattributes ./.gitattributes
 
+# Next.js 16 ajoute "type": "module" dans le package.json standalone,
+# ce qui casse server.js qui utilise CommonJS require().
+RUN python3 -c "import json; f=open('package.json','r+'); d=json.load(f); d.pop('type',None); f.seek(0); json.dump(d,f); f.truncate()" 2>/dev/null || true
+
 # Créer les dossiers d'assets (seront écrasés par le volume Coolify si configuré)
 RUN mkdir -p ./public/models/compressed ./public/textures/compressed
 
