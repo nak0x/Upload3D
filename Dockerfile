@@ -60,6 +60,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     blender \
     tini \
     python3 \
+    python3-numpy \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git lfs install --system
