@@ -6,9 +6,9 @@ import { execSync } from 'child_process'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const STAGING_DIR = join(process.cwd(), 'public', 'staging')
-const MODELS_DIR = join(process.cwd(), 'public', 'models')
-const TEXTURES_DIR = join(process.cwd(), 'public', 'textures')
+const STAGING_DIR = join(process.cwd(),'main', 'public', 'staging')
+const MODELS_DIR = join(process.cwd(),'main', 'public', 'models')
+const TEXTURES_DIR = join(process.cwd(),'main', 'public', 'textures')
 
 interface StagedFileInput {
   stagingId: string
