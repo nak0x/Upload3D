@@ -14,6 +14,7 @@ import {
   ACCEPTED_FORMATS,
   ALL_EXTENSIONS,
   uploadSingleFile,
+  commitStagedFiles,
 } from '@/lib/upload'
 import FileRow from '@/components/FileRow'
 
@@ -51,8 +52,18 @@ export default function UploadZone() {
     setIsUploading(true)
     setGlobalError(null)
 
+    // Phase 1 : stage chaque fichier séquentiellement (affichage de progression)
+    const stagedEntries: Array<{
+      index: number
+      stagingId: string
+      filename: string
+      compressedFilename: string | null
+      compressionWarning: string | null
+      isTexture: boolean
+    }> = []
+
     for (let i = 0; i < files.length; i++) {
-      if (files[i].status === 'success') continue
+      if (files[i].status === 'success' || files[i].status === 'staged') continue
 
       updateFile(i, { status: 'uploading', progress: 0, error: undefined })
 
@@ -64,24 +75,92 @@ export default function UploadZone() {
         xhrRef
       )
 
-      updateFile(i, {
-        status: result.success ? 'success' : 'error',
-        progress: result.success ? 100 : 0,
-        error: result.success ? undefined : result.error,
-        filename: result.filename,
-      })
+      if (result.success && result.stagingId && result.filename != null) {
+        updateFile(i, {
+          status: 'staged',
+          progress: 100,
+          error: undefined,
+          filename: result.filename,
+          stagingId: result.stagingId,
+          compressedFilename: result.compressedFilename ?? null,
+          compressionWarning: result.compressionWarning ?? null,
+          isTexture: result.isTexture,
+        })
+        stagedEntries.push({
+          index: i,
+          stagingId: result.stagingId,
+          filename: result.filename,
+          compressedFilename: result.compressedFilename ?? null,
+          compressionWarning: result.compressionWarning ?? null,
+          isTexture: result.isTexture ?? false,
+        })
+      } else {
+        updateFile(i, { status: 'error', progress: 0, error: result.error })
+        addToast({ type: 'error', title: `Échec upload : ${files[i].file.name}`, detail: result.error })
+      }
+    }
 
-      const name = result.filename ?? files[i].file.name
-      if (result.success) {
-        if (result.compressionWarning) {
-          addToast({ type: 'warning', title: `${name} poussé sur Git`, detail: 'Compression échouée — original sauvegardé' })
-        } else if (result.compressedFilename) {
-          addToast({ type: 'success', title: `${name} poussé et compressé` })
+    // Phase 2 : commit unique si au moins un fichier a été stagé
+    if (stagedEntries.length > 0) {
+      const commitResult = await commitStagedFiles(
+        stagedEntries.map(({ stagingId, filename, compressedFilename, isTexture }) => ({
+          stagingId,
+          filename,
+          compressedFilename,
+          isTexture,
+        })),
+        secret
+      )
+
+      if (commitResult.success) {
+        const committedSet = new Set(commitResult.committed ?? [])
+        for (const entry of stagedEntries) {
+          if (committedSet.has(entry.filename)) {
+            updateFile(entry.index, { status: 'success' })
+          } else {
+            const failInfo = commitResult.failed?.find((f) => f.filename === entry.filename)
+            updateFile(entry.index, { status: 'error', error: failInfo?.error ?? 'Non commité' })
+          }
+        }
+
+        // Toast récapitulatif
+        const committedNames = stagedEntries
+          .filter((e) => committedSet.has(e.filename))
+          .map((e) => e.filename)
+        const withCompression = stagedEntries.filter(
+          (e) => committedSet.has(e.filename) && e.compressedFilename
+        )
+        const withWarning = stagedEntries.filter(
+          (e) => committedSet.has(e.filename) && e.compressionWarning
+        )
+
+        if (committedNames.length === 1) {
+          if (withWarning.length > 0) {
+            addToast({ type: 'warning', title: `${committedNames[0]} poussé sur Git`, detail: 'Compression échouée — original sauvegardé' })
+          } else if (withCompression.length > 0) {
+            addToast({ type: 'success', title: `${committedNames[0]} poussé et compressé` })
+          } else {
+            addToast({ type: 'success', title: `${committedNames[0]} poussé sur Git` })
+          }
         } else {
-          addToast({ type: 'success', title: `${name} poussé sur Git` })
+          addToast({
+            type: withWarning.length > 0 ? 'warning' : 'success',
+            title: `${committedNames.length} fichiers poussés sur Git`,
+            detail: withWarning.length > 0 ? `${withWarning.length} compression(s) échouée(s)` : undefined,
+          })
+        }
+
+        if ((commitResult.failed?.length ?? 0) > 0) {
+          for (const f of commitResult.failed!) {
+            addToast({ type: 'error', title: `Non commité : ${f.filename}`, detail: f.error })
+          }
         }
       } else {
-        addToast({ type: 'error', title: `Échec : ${name}`, detail: result.error })
+        // Commit global échoué — tous les stagés passent en erreur
+        for (const entry of stagedEntries) {
+          updateFile(entry.index, { status: 'error', error: commitResult.error ?? 'Commit échoué' })
+        }
+        addToast({ type: 'error', title: 'Échec du push Git', detail: commitResult.error })
       }
     }
 
@@ -133,6 +212,7 @@ export default function UploadZone() {
 
   const allDone = files.length > 0 && files.every((f) => f.status === 'success')
   const hasErrors = files.some((f) => f.status === 'error')
+  const pendingCount = files.filter((f) => f.status === 'pending' || f.status === 'error').length
 
   // ─────────────────────────────────────────────
   // Render
@@ -290,16 +370,14 @@ export default function UploadZone() {
 
       {/* Boutons d'action */}
       <div className="flex gap-3">
-        {!isUploading && files.some((f) => f.status === 'pending' || f.status === 'error') && (
+        {!isUploading && pendingCount > 0 && (
           <button
             onClick={handleUpload}
             className="flex-1 bg-gradient-brand hover:opacity-90 text-white font-medium text-sm
                        py-2.5 px-6 rounded-xl shadow-soft transition-opacity duration-150
                        focus:outline-none focus:ring-2 focus:ring-brand-400"
           >
-            Uploader {files.filter(f => f.status !== 'success').length > 1
-              ? `${files.filter(f => f.status !== 'success').length} fichiers`
-              : 'le fichier'} &amp; Pousser sur Git
+            Uploader {pendingCount > 1 ? `${pendingCount} fichiers` : 'le fichier'} &amp; Pousser sur Git
           </button>
         )}
 

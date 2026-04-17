@@ -39,3 +39,6 @@ next-env.d.ts
 
 # Claude
 .claude/
+
+# Staging temporaire (upload en attente de commit)
+public/staging/

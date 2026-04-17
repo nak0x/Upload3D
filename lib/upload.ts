@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────
-export type FileStatus = 'pending' | 'uploading' | 'success' | 'error'
+export type FileStatus = 'pending' | 'uploading' | 'staged' | 'success' | 'error'
 
 export interface FileEntry {
   file: File
@@ -9,13 +9,26 @@ export interface FileEntry {
   progress: number
   error?: string
   filename?: string
+  stagingId?: string
+  compressedFilename?: string | null
+  compressionWarning?: string | null
+  isTexture?: boolean
 }
 
-export interface UploadResult {
+export interface StageResult {
   success: boolean
+  stagingId?: string
   filename?: string
   compressedFilename?: string | null
   compressionWarning?: string | null
+  isTexture?: boolean
+  error?: string
+}
+
+export interface CommitResult {
+  success: boolean
+  committed?: string[]
+  failed?: { filename: string; error: string }[]
   message?: string
   error?: string
   gitOutput?: string
@@ -58,7 +71,7 @@ export function getFileType(filename: string): 'model' | 'texture' | null {
 }
 
 // ─────────────────────────────────────────────
-// Upload XHR
+// Upload XHR — stage uniquement (pas de git)
 // ─────────────────────────────────────────────
 export function uploadSingleFile(
   file: File,
@@ -66,7 +79,7 @@ export function uploadSingleFile(
   assetName: string,
   onProgress: (pct: number) => void,
   xhrRef: { current: XMLHttpRequest | null }
-): Promise<UploadResult> {
+): Promise<StageResult> {
   return new Promise((resolve) => {
     const formData = new FormData()
     formData.append('file', file)
@@ -94,4 +107,31 @@ export function uploadSingleFile(
     xhr.setRequestHeader('x-upload-secret', secret.trim())
     xhr.send(formData)
   })
+}
+
+// ─────────────────────────────────────────────
+// Commit — un seul appel pour tous les fichiers stagés
+// ─────────────────────────────────────────────
+export async function commitStagedFiles(
+  stagedFiles: Array<{
+    stagingId: string
+    filename: string
+    compressedFilename: string | null
+    isTexture: boolean
+  }>,
+  secret: string
+): Promise<CommitResult> {
+  try {
+    const res = await fetch('/api/upload/commit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-upload-secret': secret.trim(),
+      },
+      body: JSON.stringify({ files: stagedFiles }),
+    })
+    return await res.json()
+  } catch {
+    return { success: false, error: 'Erreur réseau lors du commit.' }
+  }
 }
